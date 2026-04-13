@@ -104,10 +104,13 @@ npx prettier --write .
 - [x] `.prettierrc` 생성
 - [x] CLAUDE.md 생성
 
-### ⏳ Phase 2 — Core feature implementation (대기 중)
-- [ ] URL 입력 필드 UI
-- [ ] `/api/crawl` API Route (Playwright 크롤링)
-- [ ] `MenuTree` 트리 렌더링 컴포넌트
+### ✅ Phase 2 — Core feature implementation (완료)
+- [x] URL 입력 필드 UI (`app/page.tsx` — 폼, 로딩/에러 상태, 결과 표시)
+- [x] `/api/crawl` API Route (`app/api/crawl/route.ts` — Playwright 크롤링, URL 유효성 검사)
+- [x] `MenuTree` 트리 렌더링 컴포넌트 (`components/MenuTree.tsx` — 접기/펼치기, 재귀 렌더링)
+- [x] `lib/types.ts` — 공유 `LinkNode` 타입 분리
+- [x] `lib/crawler.ts` — 크롤링 로직 (nav 요소 추출, 깊이 계산, 트리 빌드)
+- [x] `app/layout.tsx` — Google Fonts 제거 (네트워크 제한 환경 대응)
 
 ### ⏳ Phase 3 — Integration & hardening (대기 중)
 - [ ] 전체 에러 상태 처리 (잘못된 URL, 타임아웃, 빈 결과, 비HTML 응답)
