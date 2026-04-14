@@ -112,9 +112,14 @@ npx prettier --write .
 - [x] `lib/crawler.ts` — 크롤링 로직 (nav 요소 추출, 깊이 계산, 트리 빌드)
 - [x] `app/layout.tsx` — Google Fonts 제거 (네트워크 제한 환경 대응)
 
-### ⏳ Phase 3 — Integration & hardening (대기 중)
-- [ ] 전체 에러 상태 처리 (잘못된 URL, 타임아웃, 빈 결과, 비HTML 응답)
-- [ ] 롤백 체크포인트 제안
+### ✅ Phase 3 — Integration & hardening (완료)
+- [x] 잘못된 URL / 지원 안 되는 프로토콜 → 400 에러 명확히 표시
+- [x] 타임아웃 (>15s) → TIMEOUT errorCode + 재시도 안내 UI
+- [x] 빈 결과 (nav 링크 없음) → "네비게이션 링크를 찾을 수 없습니다." 상태 표시
+- [x] 비HTML 응답 (PDF/다운로드 등) → UNSUPPORTED_CONTENT errorCode + 안내 메시지
+- [x] 연결 불가 (DNS/ECONNREFUSED) → NETWORK_ERROR errorCode
+- [x] API errorCode 기반 UI 분기 (`app/page.tsx`)
+- [x] 롤백 체크포인트 제안 완료 (`git stash` / `git tag` 안내)
 
 ---
 

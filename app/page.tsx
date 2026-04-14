@@ -12,7 +12,7 @@ export default function Home() {
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [links, setLinks] = useState<LinkNode[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<{ message: string; code: string } | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -32,12 +32,15 @@ export default function Home() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error ?? '크롤링 중 오류가 발생했습니다.');
+        setError({
+          message: data.error ?? '크롤링 중 오류가 발생했습니다.',
+          code: data.errorCode ?? 'UNKNOWN',
+        });
       } else {
         setLinks(data.links);
       }
     } catch {
-      setError('서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.');
+      setError({ message: '서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.', code: 'UNKNOWN' });
     } finally {
       setLoading(false);
     }
@@ -83,7 +86,12 @@ export default function Home() {
         {/* 에러 상태 */}
         {error && !loading && (
           <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-700">
-            {error}
+            <p>{error.message}</p>
+            {error.code === 'TIMEOUT' && (
+              <p className="mt-1.5 text-red-500">
+                잠시 후 다시 시도하거나, 더 가벼운 페이지의 URL을 입력해 보세요.
+              </p>
+            )}
           </div>
         )}
 

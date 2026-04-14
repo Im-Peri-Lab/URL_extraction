@@ -44,7 +44,31 @@ export async function crawlNavLinks(targetUrl: string): Promise<LinkNode[]> {
 
   try {
     const page = await browser.newPage();
-    await page.goto(targetUrl, { waitUntil: 'domcontentloaded', timeout: 15000 });
+
+    // commit: 응답 헤더 수신 직후 resolve → 비HTML을 DOM 파싱 전에 차단
+    let response;
+    try {
+      response = await page.goto(targetUrl, { waitUntil: 'commit', timeout: 15000 });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : '';
+      // Playwright는 다운로드 대상(PDF, ZIP 등) 탐색 시 이 에러를 던짐
+      if (msg.includes('Download is starting')) {
+        throw new Error('UNSUPPORTED_CONTENT_TYPE:download');
+      }
+      throw err;
+    }
+
+    // 비HTML 응답 조기 차단 (Content-Type 기반)
+    if (response) {
+      const contentType = response.headers()['content-type'] ?? '';
+      if (contentType && !contentType.includes('text/html')) {
+        const mimeType = contentType.split(';')[0].trim();
+        throw new Error(`UNSUPPORTED_CONTENT_TYPE:${mimeType}`);
+      }
+    }
+
+    // HTML 확인 후 DOM 완전 로드 대기
+    await page.waitForLoadState('domcontentloaded', { timeout: 15000 });
 
     // 브라우저 컨텍스트에서 네비게이션 링크 추출
     const rawLinks: Array<{ href: string; text: string; depth: number }> = await page.evaluate(
